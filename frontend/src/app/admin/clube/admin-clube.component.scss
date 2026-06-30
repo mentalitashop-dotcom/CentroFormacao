@@ -1,0 +1,420 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.club-manager {
+  display: grid;
+  gap: 18px;
+}
+
+.section-head,
+.group-head {
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.section-head h2,
+.section-head p,
+.group-head h3,
+.group-head p,
+h3,
+p {
+  margin: 0;
+}
+
+.section-head .muted {
+  margin-top: 8px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--site-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.muted,
+.hint {
+  color: var(--site-muted);
+  line-height: 1.45;
+}
+
+.hint {
+  max-width: 320px;
+  font-size: 0.9rem;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 14px;
+  background: linear-gradient(135deg, var(--site-primary), var(--site-primary-dark));
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  filter: brightness(1.04);
+}
+
+button:disabled {
+  background: #d8e2ee;
+  color: #8a98aa;
+  cursor: not-allowed;
+}
+
+.small-btn,
+.small-btn.secondary {
+  min-height: 34px;
+  border: 1px solid #cdd8e6;
+  padding: 0 12px;
+  background: #ffffff;
+  color: #45566e;
+  box-shadow: none;
+}
+
+.success,
+.error {
+  margin: 0;
+  font-weight: 600;
+}
+
+.success {
+  color: var(--site-primary-text);
+}
+
+.error {
+  color: #b91c1c;
+}
+
+.manager-panel {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(210px, 270px) minmax(0, 1fr);
+  gap: 20px;
+}
+
+.logo-area,
+.settings-group {
+  min-width: 0;
+  border: 1px solid rgba(26, 55, 92, 0.12);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: var(--site-shadow-soft);
+}
+
+.logo-area {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 14px;
+  padding: 18px;
+}
+
+.logo-preview {
+  width: 168px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #b8c8db;
+  border-radius: 8px;
+  background: #f7faff;
+  color: #34445a;
+  text-align: center;
+  font-weight: 700;
+}
+
+.logo-preview img {
+  width: 128px;
+  height: 44px;
+  object-fit: contain;
+  background: #000000;
+}
+
+.file-btn {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(18, 102, 214, 0.18);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: var(--site-primary-soft);
+  color: var(--site-primary-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.file-btn.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.file-btn input {
+  display: none;
+}
+
+.settings-area {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.settings-group {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.field-list {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field-card {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e3ebf5;
+  border-radius: 8px;
+  background: #fbfdff;
+}
+
+.field-card.editing {
+  border-color: var(--site-primary-border);
+  background: #ffffff;
+}
+
+.field-card-wide {
+  grid-column: 1 / -1;
+}
+
+.field-card-head {
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.field-card-head div {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.field-card-head span {
+  color: var(--site-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.field-card-head strong {
+  min-width: 0;
+  color: var(--site-ink);
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.field-editor,
+.schedule-editor {
+  display: grid;
+  gap: 12px;
+}
+
+label {
+  display: grid;
+  gap: 7px;
+  color: #34445a;
+  font-weight: 700;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid #cbd7e4;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--site-ink);
+}
+
+input {
+  min-height: 42px;
+  padding: 0 12px;
+}
+
+textarea {
+  min-height: 130px;
+  padding: 12px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.field-actions,
+.schedule-presets {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.schedule-summary {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid #e3ebf5;
+  border-radius: 8px;
+  background: #fbfdff;
+}
+
+.schedule-summary small {
+  color: #34445a;
+  line-height: 1.35;
+}
+
+.schedule-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.schedule-row {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.48fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #e3ebf5;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.day-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.day-toggle input {
+  width: 18px;
+  min-height: 18px;
+}
+
+.time-controls {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 12px;
+}
+
+.time-group {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.time-group > span {
+  color: var(--site-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.time-pair {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(82px, 1fr) auto minmax(82px, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+
+.time-pair > strong {
+  color: var(--site-muted);
+}
+
+.time-stepper {
+  min-width: 0;
+  height: 38px;
+  display: grid;
+  grid-template-columns: 30px minmax(32px, 1fr) 30px;
+  align-items: center;
+  border: 1px solid #cbd7e4;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.time-stepper button {
+  width: 30px;
+  min-height: 38px;
+  border-radius: 0;
+  padding: 0;
+  background: #f1f6fc;
+  color: var(--site-primary-text);
+  box-shadow: none;
+}
+
+.time-stepper output {
+  min-width: 0;
+  color: var(--site-ink);
+  font-weight: 800;
+  text-align: center;
+}
+
+.closed-label {
+  color: var(--site-muted);
+}
+
+.time-controls.closed {
+  display: block;
+}
+
+.time-controls.closed .time-group {
+  display: none;
+}
+
+@media (max-width: 1080px) {
+  .manager-panel,
+  .field-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .section-head,
+  .group-head,
+  .field-card-head {
+    display: grid;
+    align-items: stretch;
+  }
+
+  .section-head button,
+  .group-head button,
+  .field-card-head button,
+  .field-actions button,
+  .schedule-presets button {
+    width: 100%;
+  }
+
+  .schedule-row,
+  .time-controls {
+    grid-template-columns: 1fr;
+  }
+}

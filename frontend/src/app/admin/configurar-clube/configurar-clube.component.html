@@ -1,0 +1,43 @@
+<section class="setup-page">
+  <form #configForm="ngForm" class="setup-card" (ngSubmit)="submit(configForm)">
+    <div class="setup-head">
+      <p>Primeira configuracao</p>
+      <h1>Dados do clube</h1>
+      <span>Preenche a informacao principal para ativar o painel interno.</span>
+    </div>
+
+    <p *ngIf="error" class="error">{{ error }}</p>
+
+    <div class="form-grid">
+      <label>
+        Nome do clube
+        <input [(ngModel)]="form.name" name="name" required maxlength="120" />
+      </label>
+
+      <label>
+        Telefone
+        <input [(ngModel)]="form.phone" (input)="numbersOnly()" name="phone" inputmode="numeric" maxlength="9" required />
+      </label>
+
+      <label>
+        Email do clube
+        <input [(ngModel)]="form.email" name="email" type="email" required maxlength="180" />
+      </label>
+
+      <label>
+        Morada
+        <input [(ngModel)]="form.address" name="address" required maxlength="255" placeholder="Rua do Clube" />
+      </label>
+
+      <label class="full-field">
+        Sobre o clube
+        <textarea [(ngModel)]="form.aboutText" name="aboutText" rows="4" maxlength="1200"></textarea>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <span *ngIf="loading">A carregar dados...</span>
+      <button type="submit" [disabled]="loading || saving">{{ saving ? 'A guardar...' : 'Guardar e entrar' }}</button>
+    </div>
+  </form>
+</section>

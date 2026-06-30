@@ -1,0 +1,153 @@
+<section class="club-manager" aria-labelledby="club-manager-title">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Clube</p>
+      <h2 id="club-manager-title">Gestão do clube</h2>
+      <p class="muted">Altera apenas o campo necessário e mantém a informação do clube consistente no site.</p>
+    </div>
+    <button type="button" class="small-btn secondary" (click)="loadSettings()">Atualizar</button>
+  </div>
+
+  <p *ngIf="message" class="success">{{ message }}</p>
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <section class="manager-panel">
+    <aside class="logo-area" aria-label="Logotipo do clube">
+      <div>
+        <p class="eyebrow">Logotipo</p>
+        <h3>Imagem do menu</h3>
+      </div>
+
+      <div class="logo-preview">
+        <img *ngIf="settings.logoUrl" [src]="resolveImageUrl(settings.logoUrl)" alt="Logotipo do clube" />
+        <span *ngIf="!settings.logoUrl">{{ settings.name || 'Clube Formação' }}</span>
+      </div>
+
+      <label class="file-btn" [class.disabled]="savingField === 'logo'">
+        {{ savingField === 'logo' ? 'A guardar...' : 'Alterar logotipo' }}
+        <input type="file" accept="image/*" [disabled]="savingField === 'logo'" (change)="uploadLogo($event)" />
+      </label>
+      <p class="hint">Tamanho obrigatório: {{ logoWidth }} x {{ logoHeight }} px.</p>
+    </aside>
+
+    <div class="settings-area">
+      <section class="settings-group" aria-labelledby="store-identity-title">
+        <div class="group-head">
+          <div>
+            <p class="eyebrow">Dados principais</p>
+            <h3 id="store-identity-title">Identidade e contactos</h3>
+          </div>
+        </div>
+
+        <div class="field-list">
+          <article class="field-card" [class.editing]="editingField === 'name'">
+            <div class="field-card-head">
+              <div>
+                <span>Nome do clube</span>
+                <strong *ngIf="editingField !== 'name'">{{ settings.name || '-' }}</strong>
+              </div>
+              <button *ngIf="editingField !== 'name'" type="button" class="small-btn secondary" (click)="startEdit('name')">Editar</button>
+            </div>
+
+            <div *ngIf="editingField === 'name'" class="field-editor">
+              <label>
+                Nome do clube
+                <input [(ngModel)]="fieldForm.name" name="storeName" required maxlength="120" />
+              </label>
+              <div class="field-actions">
+                <button type="button" (click)="saveField('name')" [disabled]="savingField === 'name'">Guardar</button>
+                <button type="button" class="small-btn secondary" (click)="cancelEdit()">Cancelar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="field-card" [class.editing]="editingField === 'phone'">
+            <div class="field-card-head">
+              <div>
+                <span>Telefone</span>
+                <strong *ngIf="editingField !== 'phone'">{{ settings.phone || '-' }}</strong>
+              </div>
+              <button *ngIf="editingField !== 'phone'" type="button" class="small-btn secondary" (click)="startEdit('phone')">Editar</button>
+            </div>
+
+            <div *ngIf="editingField === 'phone'" class="field-editor">
+              <label>
+                Telefone
+                <input [(ngModel)]="fieldForm.phone" name="storePhone" inputmode="numeric" maxlength="9" placeholder="912345678" />
+              </label>
+              <div class="field-actions">
+                <button type="button" (click)="saveField('phone')" [disabled]="savingField === 'phone'">Guardar</button>
+                <button type="button" class="small-btn secondary" (click)="cancelEdit()">Cancelar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="field-card" [class.editing]="editingField === 'email'">
+            <div class="field-card-head">
+              <div>
+                <span>Email</span>
+                <strong *ngIf="editingField !== 'email'">{{ settings.email || '-' }}</strong>
+              </div>
+              <button *ngIf="editingField !== 'email'" type="button" class="small-btn secondary" (click)="startEdit('email')">Editar</button>
+            </div>
+
+            <div *ngIf="editingField === 'email'" class="field-editor">
+              <label>
+                Email
+                <input [(ngModel)]="fieldForm.email" name="storeEmail" type="email" maxlength="180" placeholder="secretaria@exemplo.pt" />
+              </label>
+              <div class="field-actions">
+                <button type="button" (click)="saveField('email')" [disabled]="savingField === 'email'">Guardar</button>
+                <button type="button" class="small-btn secondary" (click)="cancelEdit()">Cancelar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="field-card field-card-wide" [class.editing]="editingField === 'aboutText'">
+            <div class="field-card-head">
+              <div>
+                <span>Sobre o clube</span>
+                <strong *ngIf="editingField !== 'aboutText'">{{ settings.aboutText || 'Ainda não definido' }}</strong>
+              </div>
+              <button *ngIf="editingField !== 'aboutText'" type="button" class="small-btn secondary" (click)="startEdit('aboutText')">Editar</button>
+            </div>
+
+            <div *ngIf="editingField === 'aboutText'" class="field-editor">
+              <label>
+                História do clube
+                <textarea [(ngModel)]="fieldForm.aboutText" name="storeAboutText" rows="5" maxlength="1200" placeholder="Escreve um pequeno texto sobre o clube, a sua origem e aquilo que o distingue."></textarea>
+              </label>
+              <p class="hint">{{ fieldForm.aboutText.length }}/1200 caracteres</p>
+              <div class="field-actions">
+                <button type="button" (click)="saveField('aboutText')" [disabled]="savingField === 'aboutText'">Guardar</button>
+                <button type="button" class="small-btn secondary" (click)="cancelEdit()">Cancelar</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="field-card field-card-wide" [class.editing]="editingField === 'address'">
+            <div class="field-card-head">
+              <div>
+                <span>Morada</span>
+                <strong *ngIf="editingField !== 'address'">{{ settings.address || '-' }}</strong>
+              </div>
+              <button *ngIf="editingField !== 'address'" type="button" class="small-btn secondary" (click)="startEdit('address')">Editar</button>
+            </div>
+
+            <div *ngIf="editingField === 'address'" class="field-editor">
+              <label>
+                Morada
+                <input [(ngModel)]="fieldForm.address" name="storeAddress" maxlength="255" placeholder="Rua das Flores, 12" />
+              </label>
+              <div class="field-actions">
+                <button type="button" (click)="saveField('address')" [disabled]="savingField === 'address'">Guardar</button>
+                <button type="button" class="small-btn secondary" (click)="cancelEdit()">Cancelar</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </div>
+  </section>
+</section>

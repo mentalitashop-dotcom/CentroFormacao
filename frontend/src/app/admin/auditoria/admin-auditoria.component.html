@@ -1,0 +1,44 @@
+<section class="audit-module">
+  <div class="audit-head table-section-head">
+    <div>
+      <p class="eyebrow">Controlo interno</p>
+      <h2>Auditoria de atividade</h2>
+      <p>Consulta quem criou, editou, desativou ou removeu registos do clube.</p>
+    </div>
+    <button type="button" (click)="loadLogs()">Atualizar</button>
+  </div>
+
+  <section class="manager-panel">
+    <form class="audit-filters" aria-label="Filtros da auditoria">
+      <label>Pesquisar<input [(ngModel)]="search" (ngModelChange)="onFilterChange()" name="auditSearch" type="search" placeholder="Utilizador, ação ou registo" /></label>
+      <label>Tipo<select [(ngModel)]="entityType" (ngModelChange)="onFilterChange()" name="auditType"><option value="">Todos</option><option value="Área de formação">Áreas de formação</option><option value="Escalão">Escalões</option><option value="Plano de inscrição">Planos de inscrição</option><option value="Inscrição">Inscrições</option></select></label>
+      <label>Ação<select [(ngModel)]="actionFilter" (ngModelChange)="onFilterChange()" name="auditAction"><option value="">Todas</option><option *ngFor="let action of actionOptions" [value]="action">{{ action }}</option></select></label>
+      <label>Ordenação<select [(ngModel)]="sortFilter" (ngModelChange)="onFilterChange()" name="auditSort"><option value="dateDesc">Mais recentes</option><option value="dateAsc">Mais antigos</option><option value="userAsc">Utilizador A-Z</option><option value="userDesc">Utilizador Z-A</option><option value="typeAsc">Tipo A-Z</option></select></label>
+      <button type="button" class="secondary" [disabled]="!hasActiveFilters" (click)="clearFilters()">Limpar</button>
+    </form>
+
+    <p *ngIf="error" class="error">{{ error }}</p>
+
+    <div class="table-wrap">
+      <table class="table table-hover align-middle mb-0">
+        <thead><tr><th>Data</th><th>Utilizador</th><th>Ação</th><th>Tipo</th><th>Registo</th><th>Detalhes</th></tr></thead>
+        <tbody>
+          <tr *ngFor="let log of paginatedLogs">
+            <td>{{ log.createdAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+            <td><strong>{{ log.actor?.username || 'Utilizador removido' }}</strong><small>{{ log.actor?.email || '-' }}</small></td>
+            <td>{{ log.action }}</td>
+            <td><span class="type-pill">{{ displayEntityType(log.entityType) }}</span></td>
+            <td><strong>{{ log.entityName || '-' }}</strong><small>#{{ log.entityId }}</small></td>
+            <td>{{ describeDetails(log) || '-' }}</td>
+          </tr>
+          <tr *ngIf="filteredLogs.length === 0"><td colspan="6" class="empty-state">Não existem ações com estes filtros.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="table-result-row"><span>{{ filteredLogs.length }} {{ filteredLogs.length === 1 ? 'ação encontrada' : 'ações encontradas' }}</span></div>
+    <div class="pagination" *ngIf="totalPages > 1" aria-label="Paginação da auditoria">
+      <button *ngFor="let item of pageNumbers" type="button" class="page-btn" [class.active]="item === page" [attr.aria-current]="item === page ? 'page' : null" (click)="goToPage(item)">{{ item }}</button>
+    </div>
+  </section>
+</section>
