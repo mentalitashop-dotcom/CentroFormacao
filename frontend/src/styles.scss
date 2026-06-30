@@ -1,0 +1,134 @@
+:root {
+  --bs-primary: #004b9b;
+  --bs-primary-rgb: 0, 75, 155;
+  --bs-body-bg: #f6f8fb;
+  --bs-body-color: #182230;
+  --bs-border-radius: 8px;
+  --bs-font-sans-serif: "Aptos", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+  --site-primary: #004b9b;
+  --site-primary-dark: #00346d;
+  --site-primary-soft: #e7f1ff;
+  --site-primary-border: #9bc5f6;
+  --site-primary-text: #003d7d;
+  --site-accent: #d4af37;
+  --site-accent-soft: #fff7d8;
+  --site-ink: #182230;
+  --site-muted: #687386;
+  --site-line: #d8e0ea;
+  --site-bg: #f6f8fb;
+  --site-surface: #ffffff;
+  --site-shadow: 0 18px 44px rgba(28, 43, 62, 0.08);
+  --site-shadow-soft: 0 10px 24px rgba(28, 43, 62, 0.06);
+  --site-radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  margin: 0;
+  min-height: 100%;
+  font-family: "Aptos", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+  letter-spacing: 0;
+  background:
+    linear-gradient(180deg, rgba(231, 241, 255, 0.92), rgba(246, 248, 251, 0.9) 260px),
+    var(--site-bg);
+  color: var(--site-ink);
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  letter-spacing: 0;
+}
+
+button,
+a {
+  transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+button:hover:not(:disabled),
+a:hover {
+  transform: translateY(-1px);
+}
+
+input,
+select,
+textarea {
+  border-color: #cbd7e4;
+  color: var(--site-ink);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--site-primary);
+  outline: 3px solid rgba(18, 102, 214, 0.15);
+}
+
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+th {
+  color: #34445a;
+}
+
+::selection {
+  background: var(--site-primary);
+  color: #ffffff;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+main,
+section,
+article,
+aside,
+form,
+div,
+nav {
+  min-width: 0;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+td,
+th,
+dd,
+label,
+button,
+a {
+  overflow-wrap: anywhere;
+}
+
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+.table-wrap {
+  max-width: 100%;
+  overscroll-behavior-inline: contain;
+}
