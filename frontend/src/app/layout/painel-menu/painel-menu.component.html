@@ -1,0 +1,5 @@
+<nav [attr.aria-label]="ariaLabel">
+  <button *ngFor="let item of items" type="button" [class.active]="activeId === item.id" [attr.aria-current]="activeId === item.id ? 'page' : null" (click)="itemSelected.emit(item.id)">
+    <strong>{{ item.label }}</strong><small>{{ item.description }}</small>
+  </button>
+</nav>

@@ -1,0 +1,45 @@
+.dashboard {
+  overflow-x: hidden;
+  min-height: calc(100vh - 64px);
+  padding: 34px min(5vw, 64px) 56px;
+  background: linear-gradient(180deg, #edf5ff 0, rgba(246, 248, 251, 0) 260px), var(--site-bg);
+  color: var(--site-ink);
+}
+
+.dashboard-shell {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+}
+
+.dashboard-workspace {
+  min-width: 0;
+  display: grid;
+  gap: 18px;
+}
+
+.dashboard-panel {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  display: grid;
+  gap: 20px;
+}
+
+.users-panel {
+  gap: 26px;
+}
+
+@media (max-width: 1050px) {
+  .dashboard-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .dashboard {
+    padding: 22px 16px 42px;
+  }
+}

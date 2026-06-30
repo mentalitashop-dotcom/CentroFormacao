@@ -1,0 +1,225 @@
+<section class="clients-section" aria-labelledby="clients-title">
+  <div class="table-section-head">
+    <div>
+      <p class="eyebrow">Atletas</p>
+      <h2 id="clients-title">Tabela de atletas/alunos registados</h2>
+      <p class="muted">Consulta os atletas registados e usa a pesquisa quando quiseres encontrar um registo específico.</p>
+    </div>
+    <button type="button" class="small-btn" (click)="openCreateAthleteModal()">Novo atleta</button>
+  </div>
+
+  <p *ngIf="message" class="success">{{ message }}</p>
+  <p *ngIf="error && !athleteModalOpen" class="error">{{ error }}</p>
+
+  <section class="manager-panel">
+  <form class="table-toolbar clients-toolbar" aria-label="Pesquisa e filtros de atletas" (ngSubmit)="searchClients()">
+    <label class="search-field">
+      Pesquisar
+      <input
+        [(ngModel)]="searchTerm"
+        name="clientSearch"
+        type="search"
+        placeholder="Telefone, email ou NIF"
+      />
+    </label>
+    <button type="submit" class="small-btn">Pesquisar</button>
+
+    <label>
+      Estado
+      <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()" name="clientStatusFilter">
+        <option value="todos">Todos</option>
+        <option value="ativos">Ativos</option>
+        <option value="inativos">Inativos</option>
+      </select>
+    </label>
+
+    <label>
+      Dados
+      <select [(ngModel)]="profileFilter" (ngModelChange)="onFilterChange()" name="clientProfileFilter">
+        <option value="todos">Todos</option>
+        <option value="com-dados">Com dados</option>
+        <option value="sem-dados">Sem dados</option>
+      </select>
+    </label>
+
+    <label>
+      Ordenação
+      <select [(ngModel)]="sortFilter" (ngModelChange)="onFilterChange()" name="clientSortFilter">
+        <option value="nameAsc">Nome A-Z</option>
+        <option value="nameDesc">Nome Z-A</option>
+        <option value="createdDesc">Mais recentes</option>
+        <option value="createdAsc">Mais antigos</option>
+      </select>
+    </label>
+
+    <button type="button" class="small-btn secondary" [disabled]="!hasActiveFilters" (click)="clearFilters()">Limpar</button>
+  </form>
+
+  <div class="table-wrap clients-table-wrap">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Atleta</th>
+          <th>Email</th>
+          <th>Telefone</th>
+          <th>NIF</th>
+          <th>Morada</th>
+          <th>Fotografia</th>
+          <th>Certificado de saúde</th>
+          <th>Estado</th>
+          <th>Criado em</th>
+          <th *ngIf="isAdmin">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let client of paginatedClients">
+          <td>
+            <div class="user-cell">
+              <span class="avatar client-avatar">{{ getUserInitials(client) }}</span>
+              <span>
+                <strong>{{ getUserName(client) }}</strong>
+                <small>{{ client.username }}</small>
+              </span>
+            </div>
+          </td>
+          <td>{{ client.email }}</td>
+          <td>{{ client.userData?.phone || '-' }}</td>
+          <td>{{ client.userData?.taxpayerNumber || '-' }}</td>
+          <td>{{ client.userData?.address || '-' }}</td>
+          <td>
+            <div class="file-cell">
+              <img *ngIf="client.userData?.athletePhotoUrl" class="athlete-photo" [src]="resolveImageUrl(client.userData.athletePhotoUrl)" [alt]="'Fotografia de ' + getUserName(client)" />
+              <span *ngIf="!client.userData?.athletePhotoUrl" class="file-muted">Sem fotografia</span>
+
+            </div>
+          </td>
+          <td>
+            <div class="file-cell certificate-cell">
+              <button *ngIf="client.userData?.healthCertificateUrl" type="button" class="small-btn secondary" (click)="openHealthCertificate(client)">{{ getHealthCertificateName(client) }}</button>
+              <span *ngIf="!client.userData?.healthCertificateUrl" class="file-muted">Por entregar</span>
+
+            </div>
+          </td>          <td>
+            <span class="status-pill" [class.off]="!client.ativo">
+              {{ client.ativo ? 'Ativo' : 'Inativo' }}
+            </span>
+          </td>
+          <td>{{ client.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td *ngIf="isAdmin">
+            <div class="action-buttons">
+              <button
+                type="button"
+                class="action-icon-btn"
+                [class.activate]="!client.ativo"
+                [title]="client.ativo ? 'Desativar atleta' : 'Ativar atleta'"
+                [attr.aria-label]="client.ativo ? 'Desativar atleta' : 'Ativar atleta'"
+                (click)="toggleUserActive(client)"
+              >
+                <span class="power-icon" aria-hidden="true"></span>
+              </button>
+
+              <button
+                *ngIf="!client.ativo"
+                type="button"
+                class="action-icon-btn danger"
+                title="Remover atleta"
+                aria-label="Remover atleta"
+                (click)="removeUser(client)"
+              >
+                <span class="trash-icon" aria-hidden="true"></span>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="filteredClients.length === 0">
+          <td [attr.colspan]="isAdmin ? 10 : 9" class="empty-state">{{ hasSearched ? 'Não foram encontrados atletas com estes filtros.' : 'Ainda não existem atletas registados.' }}</td>
+        </tr>
+        <tr *ngFor="let row of clientEmptyRows" class="placeholder-row" aria-hidden="true">
+          <td [attr.colspan]="isAdmin ? 10 : 9">&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-result-row clients-result-row" *ngIf="hasSearched">
+    <span>{{ filteredClients.length }} {{ filteredClients.length === 1 ? 'atleta encontrado' : 'atletas encontrados' }}</span>
+  </div>
+
+  <div class="pagination" *ngIf="totalClientPages > 1" aria-label="Paginação de atletas">
+    <ng-container *ngFor="let page of pageNumbers">
+    <button
+      *ngIf="page !== 'ellipsis'; else clientPaginationEllipsis"
+      type="button"
+      class="page-btn"
+      [class.active]="page === clientPage"
+      [attr.aria-current]="page === clientPage ? 'page' : null"
+      (click)="goToPage(page)"
+    >
+      {{ page }}
+    </button>
+    <ng-template #clientPaginationEllipsis>
+      <span class="page-ellipsis" aria-hidden="true">...</span>
+    </ng-template>
+    </ng-container>
+  </div>
+  </section>
+</section>
+
+<div *ngIf="athleteModalOpen" class="modal-backdrop" (click)="closeCreateAthleteModal()">
+  <section class="employee-modal athlete-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <div class="table-section-head">
+      <div>
+        <p class="eyebrow">Atleta</p>
+        <h2>Novo atleta</h2>
+      </div>
+      <button type="button" class="small-btn secondary" (click)="closeCreateAthleteModal()">Fechar</button>
+    </div>
+
+    <p *ngIf="modalError" class="error modal-error">{{ modalError }}</p>
+
+    <form class="athlete-form" (ngSubmit)="createAthlete()">
+      <section class="form-card-section wide-field">
+        <h3>Dados do atleta</h3>
+        <div class="athlete-form-grid">
+          <label>Nome<input [(ngModel)]="athleteForm.name" name="athleteName" required maxlength="120" /></label>
+          <label>Email<input [(ngModel)]="athleteForm.email" name="athleteEmail" type="email" required maxlength="180" /></label>
+          <label>Telefone<input [(ngModel)]="athleteForm.phone" name="athletePhone" required maxlength="9" inputmode="numeric" /></label>
+          <label>NIF<input [(ngModel)]="athleteForm.taxpayerNumber" name="athleteTaxpayerNumber" maxlength="9" inputmode="numeric" /></label>
+          <label>Data de nascimento<input [(ngModel)]="athleteForm.birthDate" name="athleteBirthDate" type="date" /></label>
+          <label>Escalão / plano de inscrição
+            <select [(ngModel)]="athleteForm.planId" name="athletePlanId" required>
+              <option value="">Selecionar escalão</option>
+              <option *ngFor="let plan of plans" [value]="plan._id" [disabled]="plan.vacancies <= 0">{{ plan.name }} - {{ formatPrice(plan.feeCents) }} - {{ plan.vacancies }} vaga(s)</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="form-card-section wide-field">
+        <h3>Morada</h3>
+        <div class="athlete-form-grid">
+          <label>Rua/Avenida<input [(ngModel)]="athleteForm.street" name="athleteStreet" required placeholder="Rua do Centro" maxlength="180" /></label>
+          <label>Número da porta<input [(ngModel)]="athleteForm.doorNumber" name="athleteDoorNumber" required maxlength="12" /></label>
+          <label>Código postal<input [(ngModel)]="athleteForm.postalCode" name="athletePostalCode" required placeholder="1234-567" maxlength="8" /></label>
+          <label>Cidade<input [(ngModel)]="athleteForm.city" name="athleteCity" required maxlength="100" /></label>
+        </div>
+      </section>
+
+      <section class="form-card-section wide-field">
+        <h3>Contactos e documentos</h3>
+        <div class="athlete-form-grid">
+          <label>Contacto de emergência<input [(ngModel)]="athleteForm.emergencyContactName" name="athleteEmergencyContactName" maxlength="120" /></label>
+          <label>Telefone emergência<input [(ngModel)]="athleteForm.emergencyContactPhone" name="athleteEmergencyContactPhone" maxlength="9" inputmode="numeric" /></label>
+          <label class="upload-box">Fotografia do atleta<input type="file" accept="image/*" (change)="selectAthletePhotoForForm($event)" /><span>{{ athleteForm.athletePhotoFile?.name || 'Selecionar fotografia' }}</span></label>
+          <label class="upload-box">Certificado de saúde<input type="file" accept="application/pdf,image/*" (change)="selectHealthCertificateForForm($event)" /><span>{{ athleteForm.healthCertificateFile?.name || 'Selecionar documento' }}</span></label>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="creatingAthlete">{{ creatingAthlete ? 'A criar...' : 'Criar atleta e inscrição' }}</button>
+        <button type="button" class="secondary-btn" (click)="closeCreateAthleteModal()">Cancelar</button>
+      </div>
+    </form>
+  </section>
+</div>

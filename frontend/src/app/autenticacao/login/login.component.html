@@ -1,0 +1,29 @@
+<section class="auth-shell">
+  <div class="auth-panel">
+    <p class="eyebrow">Clube Formação</p>
+    <h1>Área do clube</h1>
+    <p class="intro">Acesso interno para o gestor do clube e treinadores.</p>
+
+    <form (ngSubmit)="submit()" #loginForm="ngForm" class="auth-form">
+      <label>
+        <span>Nome de utilizador ou email</span>
+        <input name="identifier" [(ngModel)]="identifier" required autocomplete="username" />
+      </label>
+
+      <label>
+        <span>Palavra-passe</span>
+        <input name="password" [(ngModel)]="password" required [type]="showPassword ? 'text' : 'password'" autocomplete="current-password" />
+      </label>
+
+      <button class="ghost" type="button" (click)="togglePassword()">
+        {{ showPassword ? 'Ocultar palavra-passe' : 'Mostrar palavra-passe' }}
+      </button>
+
+      <p class="error" *ngIf="error">{{ error }}</p>
+
+      <button type="submit" [disabled]="loginForm.invalid">
+        Entrar
+      </button>
+    </form>
+  </div>
+</section>

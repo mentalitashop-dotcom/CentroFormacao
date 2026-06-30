@@ -1,0 +1,27 @@
+<section class="page">
+  <div class="panel">
+    <p class="eyebrow">Definições</p>
+    <h1>Conta</h1>
+
+    <div *ngIf="user; else noUser" class="settings-list">
+      <a routerLink="/perfil">Ver perfil</a>
+      <a *ngIf="isFuncionario" routerLink="/dashboard">Ir para dashboard</a>
+      <button type="button" (click)="logout()">Terminar sessão</button>
+    </div>
+
+    <form *ngIf="user" class="password-form" (ngSubmit)="changePassword()" #passwordChangeForm="ngForm">
+      <h2>Alterar palavra-passe</h2>
+      <label>Palavra-passe atual<input [(ngModel)]="passwordForm.currentPassword" name="currentPassword" type="password" required autocomplete="current-password" /></label>
+      <label>Nova palavra-passe<input [(ngModel)]="passwordForm.newPassword" name="newPassword" type="password" required minlength="8" autocomplete="new-password" /></label>
+      <label>Confirmar nova palavra-passe<input [(ngModel)]="passwordForm.confirmPassword" name="confirmPassword" type="password" required minlength="8" autocomplete="new-password" /></label>
+      <p *ngIf="passwordMessage" class="success">{{ passwordMessage }}</p>
+      <p *ngIf="passwordError" class="error">{{ passwordError }}</p>
+      <button class="primary" type="submit" [disabled]="passwordChangeForm.invalid || changingPassword">{{ changingPassword ? 'A guardar...' : 'Alterar palavra-passe' }}</button>
+    </form>
+
+    <ng-template #noUser>
+      <p class="muted">Inicia sessão para acederes às definições.</p>
+      <a routerLink="/login">Ir para login</a>
+    </ng-template>
+  </div>
+</section>

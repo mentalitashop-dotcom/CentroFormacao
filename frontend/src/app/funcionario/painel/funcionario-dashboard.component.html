@@ -1,0 +1,43 @@
+<section class="dashboard container-fluid py-4 py-lg-5">
+  <app-painel-cabecalho eyebrow="Centro de Formação" title="Painel interno" [subtitle]="userTypeLabel" />
+
+    <div class="dashboard-shell row g-4">
+      <app-painel-menu [items]="visibleTabs" [activeId]="activeTab" ariaLabel="Áreas do centro de formação" (itemSelected)="selectTabById($event)" />
+
+      <main class="dashboard-workspace">
+        <section class="dashboard-panel" *ngIf="activeTab === 'inicio'">
+          <app-gestor-resumo (navigateToSection)="openSummaryTarget($event)" />
+        </section>
+
+        <section class="dashboard-panel" *ngIf="activeTab === 'inscricoes'">
+          <app-funcionario-inscricoes-tabela [initialStatusFilter]="enrolmentStatusFilter" />
+        </section>
+
+        <section class="dashboard-panel users-panel" *ngIf="activeTab === 'alunos'">
+          <app-funcionario-alunos-tabela />
+        </section>
+
+        <section class="dashboard-panel" *ngIf="activeTab === 'formacao'">
+          <app-funcionario-formacao-tabela (structureSelected)="openStructurePlans($event)" />
+        </section>
+
+        <section class="dashboard-panel" *ngIf="activeTab === 'planos'">
+          <app-funcionario-planos-inscricao-tabela [initialVacancyFilter]="planVacancyFilter" [initialStructureFilter]="planStructureFilter" />
+        </section>
+
+        <section class="dashboard-panel" *ngIf="activeTab === 'clube' && isAdmin">
+          <app-admin-clube />
+        </section>
+
+        <section class="dashboard-panel users-panel" *ngIf="activeTab === 'funcionarios' && isAdmin">
+          <app-admin-funcionarios-tabela />
+        </section>
+
+
+
+        <section class="dashboard-panel" *ngIf="activeTab === 'auditoria' && isAdmin">
+          <app-admin-auditoria />
+        </section>
+      </main>
+    </div>
+</section>

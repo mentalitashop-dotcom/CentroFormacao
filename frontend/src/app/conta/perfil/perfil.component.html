@@ -1,0 +1,66 @@
+<section class="page" [class.embedded]="embedded">
+  <div class="panel">
+    <p class="eyebrow">Conta</p>
+    <h2>Perfil</h2>
+
+    <ng-container *ngIf="user; else noUser">
+      <dl class="profile-list">
+        <div *ngIf="isFuncionario">
+          <dt>Nome de utilizador</dt>
+          <dd>
+            <span class="field-view" *ngIf="editingField !== 'username'; else editUsername"><span>{{ profile.username }}</span><button type="button" class="edit-icon-btn" title="Editar" (click)="startEdit('username')"><span class="pencil-icon"></span></button></span>
+            <ng-template #editUsername><span class="inline-edit"><input [(ngModel)]="profile.username" minlength="7" pattern="^[a-zA-Z0-9_]+$" /><button class="small-btn" (click)="saveField('username')">Guardar</button><button class="small-btn secondary" (click)="cancelEdit('username')">Cancelar</button></span></ng-template>
+          </dd>
+        </div>
+        <div>
+          <dt>Email</dt>
+          <dd>
+            <span class="field-view" *ngIf="editingField !== 'email'; else editEmail"><span>{{ profile.email }}</span><button type="button" class="edit-icon-btn" title="Editar" (click)="startEdit('email')"><span class="pencil-icon"></span></button></span>
+            <ng-template #editEmail><span class="inline-edit"><input [(ngModel)]="profile.email" type="email" /><button class="small-btn" (click)="saveField('email')">Guardar</button><button class="small-btn secondary" (click)="cancelEdit('email')">Cancelar</button></span></ng-template>
+          </dd>
+        </div>
+        <div>
+          <dt>Nome completo</dt>
+          <dd>
+            <span class="field-view" *ngIf="editingField !== 'name'; else editName"><span>{{ profile.name }}</span><button type="button" class="edit-icon-btn" title="Editar" (click)="startEdit('name')"><span class="pencil-icon"></span></button></span>
+            <ng-template #editName><span class="inline-edit"><input [(ngModel)]="profile.name" maxlength="120" /><button class="small-btn" (click)="saveField('name')">Guardar</button><button class="small-btn secondary" (click)="cancelEdit('name')">Cancelar</button></span></ng-template>
+          </dd>
+        </div>
+        <div>
+          <dt>Telefone</dt>
+          <dd>
+            <span class="field-view" *ngIf="editingField !== 'phone'; else editPhone"><span>{{ profile.phone }}</span><button type="button" class="edit-icon-btn" title="Editar" (click)="startEdit('phone')"><span class="pencil-icon"></span></button></span>
+            <ng-template #editPhone><span class="inline-edit"><input [(ngModel)]="profile.phone" (input)="numbersOnly('phone')" inputmode="numeric" maxlength="9" pattern="^[29][0-9]{8}$" /><button class="small-btn" (click)="saveField('phone')">Guardar</button><button class="small-btn secondary" (click)="cancelEdit('phone')">Cancelar</button></span></ng-template>
+          </dd>
+        </div>
+        <div *ngIf="!isFuncionario">
+          <dt>NIF</dt>
+          <dd>
+            <span class="field-view" *ngIf="editingField !== 'taxpayerNumber'; else editTaxpayerNumber"><span>{{ profile.taxpayerNumber || 'Não indicado' }}</span><button type="button" class="edit-icon-btn" title="Editar NIF" (click)="startEdit('taxpayerNumber')"><span class="pencil-icon"></span></button></span>
+            <ng-template #editTaxpayerNumber><span class="inline-edit"><input [(ngModel)]="profile.taxpayerNumber" (input)="numbersOnly('taxpayerNumber')" inputmode="numeric" maxlength="9" /><button class="small-btn" (click)="saveField('taxpayerNumber')">Guardar</button><button class="small-btn secondary" (click)="cancelEdit('taxpayerNumber')">Cancelar</button></span></ng-template>
+          </dd>
+        </div>
+        <div *ngIf="isFuncionario"><dt>N.º interno</dt><dd>{{ profile.employeeNumber }}</dd></div>
+        <div *ngIf="isFuncionario"><dt>Cargo/Função</dt><dd>{{ profile.jobTitle }}</dd></div>
+        <div>
+          <dt>Morada</dt>
+          <dd>
+            <span class="field-view" *ngIf="!editingAddress"><span>{{ formattedAddress }}</span><button type="button" class="edit-icon-btn" title="Editar morada" (click)="editingAddress = true"><span class="pencil-icon"></span></button></span>
+            <span class="address-edit" *ngIf="editingAddress">
+              <input [(ngModel)]="profile.street" placeholder="Rua das Flores" />
+              <input [(ngModel)]="profile.doorNumber" placeholder="Porta" />
+              <input [(ngModel)]="profile.postalCode" (input)="numbersOnly('postalCode')" inputmode="numeric" placeholder="1234-567" maxlength="8" />
+              <input [(ngModel)]="profile.city" placeholder="Cidade" />
+              <button class="small-btn" (click)="saveAddress()">Guardar morada</button>
+              <button class="small-btn secondary" (click)="cancelAddress()">Cancelar</button>
+            </span>
+          </dd>
+        </div>
+      </dl>
+      <p *ngIf="message" class="success">{{ message }}</p>
+      <p *ngIf="error" class="error">{{ error }}</p>
+    </ng-container>
+
+    <ng-template #noUser><p class="muted">Inicia sessão para veres o teu perfil.</p><a routerLink="/login">Ir para login</a></ng-template>
+  </div>
+</section>

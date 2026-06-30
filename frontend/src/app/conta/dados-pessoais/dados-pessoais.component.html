@@ -1,0 +1,19 @@
+<section class="employee-data">
+  <form (ngSubmit)="submit(dadosForm)" #dadosForm="ngForm" class="panel" novalidate>
+    <p class="eyebrow">{{ isFuncionario ? 'Dados do treinador' : 'Morada' }}</p>
+    <h1>{{ isFuncionario ? 'Completar dados pessoais' : 'Completar morada' }}</h1>
+    <p class="hint">{{ isFuncionario ? 'Confirma os teus dados e indica a morada completa.' : 'Confirma os dados pessoais e a morada.' }}</p>
+    <div class="field-grid">
+      <label *ngIf="isFuncionario" class="full-field">Nome completo<input name="name" [(ngModel)]="form.name" required minlength="3" maxlength="120" autocomplete="name" /></label>
+      <label *ngIf="isFuncionario">Telefone<input name="phone" [(ngModel)]="form.phone" (input)="numbersOnly('phone')" required inputmode="numeric" maxlength="9" pattern="^[29][0-9]{8}$" autocomplete="tel" placeholder="912345678" /></label>
+      <label *ngIf="isFuncionario">Cargo/Função<input name="jobTitle" [(ngModel)]="form.jobTitle" required maxlength="80" /></label>
+      <label *ngIf="!isFuncionario" class="full-field">NIF <span class="optional-label">opcional</span><input name="taxpayerNumber" [(ngModel)]="form.taxpayerNumber" (input)="numbersOnly('taxpayerNumber')" inputmode="numeric" maxlength="9" pattern="^[1-9][0-9]{8}$" autocomplete="off" placeholder="123456789" /></label>
+      <label class="full-field">Nome da rua ou avenida<input name="street" [(ngModel)]="form.street" required minlength="5" maxlength="170" placeholder="Rua das Flores" autocomplete="address-line1" /></label>
+      <label>Numero da porta<input name="doorNumber" [(ngModel)]="form.doorNumber" required maxlength="12" autocomplete="address-line2" placeholder="12 ou 12A" /></label>
+      <label>Codigo postal<input name="postalCode" [ngModel]="form.postalCode" (ngModelChange)="formatPostalCode($event)" required inputmode="numeric" maxlength="8" placeholder="1234-567" autocomplete="postal-code" /></label>
+      <label class="full-field">Cidade<input name="city" [(ngModel)]="form.city" required minlength="2" maxlength="80" autocomplete="address-level2" /></label>
+    </div>
+    <p *ngIf="error" class="error">{{ error }}</p>
+    <button type="submit" [disabled]="loading || saving">{{ saving ? 'A guardar...' : 'Guardar dados' }}</button>
+  </form>
+</section>

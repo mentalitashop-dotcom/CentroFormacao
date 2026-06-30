@@ -1,0 +1,270 @@
+<section class="structure-manager" aria-labelledby="structures-title">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Futebol</p>
+      <h2 id="structures-title">Gestão de registos de futebol e escalões</h2>
+      <p class="muted">Organiza o clube em registos de futebol principais e respetivos escalões.</p>
+    </div>
+    <div class="head-actions">
+      <button type="button" (click)="openCreateStructureModal()">Novo registo</button>
+      <button type="button" class="small-btn secondary" (click)="loadData()">Atualizar</button>
+    </div>
+  </div>
+
+  <p *ngIf="message" class="success">{{ message }}</p>
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <section class="structure-board">
+    <section class="structure-column">
+      <div class="column-head">
+        <div>
+          <h3>Futebol</h3>
+          <p>Grupos base usados para organizar o clube.</p>
+        </div>
+      </div>
+
+      <form class="table-toolbar structure-toolbar" aria-label="Filtros de registos de futebol">
+        <label class="search-field">
+          Pesquisar
+          <input [(ngModel)]="mainSearch" (ngModelChange)="onMainFilterChange()" name="mainStructureSearch" type="search" placeholder="Nome ou descrição" />
+        </label>
+
+        <label>
+          Estado
+          <select [(ngModel)]="mainStatusFilter" (ngModelChange)="onMainFilterChange()" name="mainStructureStatus">
+            <option value="todos">Todas</option>
+            <option value="ativas">Ativas</option>
+            <option value="inativas">Inativas</option>
+          </select>
+        </label>
+
+        <label>
+          Ordenação
+          <select [(ngModel)]="mainSort" (ngModelChange)="onMainFilterChange()" name="mainStructureSort">
+            <option value="nameAsc">Nome A-Z</option>
+            <option value="nameDesc">Nome Z-A</option>
+            <option value="substructuresDesc">Mais escalões</option>
+            <option value="substructuresAsc">Menos escalões</option>
+          </select>
+        </label>
+
+        <button type="button" class="small-btn secondary" [disabled]="!hasMainFilters" (click)="clearMainFilters()">Limpar</button>
+      </form>
+
+      <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Futebol</th>
+              <th>Escalões</th>
+              <th>Estado</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let structure of paginatedMainStructures">
+              <td>
+                <button type="button" class="table-link" (click)="openPlans(structure)">{{ structure.name }}</button>
+                <small>{{ structure.description || 'Sem descrição' }}</small>
+              </td>
+              <td><button type="button" class="count-pill count-link" (click)="openPlans(structure)" title="Ver escalões desta área">{{ getSubstructureCount(structure) }}</button></td>
+              <td><span class="pill" [class.off]="!structure.active">{{ structure.active ? 'Ativa' : 'Inativa' }}</span></td>
+              <td>
+                <div class="row-actions">
+                  <button type="button" class="small-btn" (click)="editStructure(structure)">Editar</button>
+                  <button type="button" class="small-btn danger" (click)="removeStructure(structure)">{{ structureActionLabel() }}</button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredMainStructures.length === 0">
+              <td colspan="4" class="empty-state">Ainda não existem registos de futebol registadas.</td>
+            </tr>
+            <tr *ngFor="let row of mainEmptyRows" class="placeholder-row" aria-hidden="true">
+              <td colspan="4">&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-result-row">
+        <span>{{ filteredMainStructures.length }} {{ filteredMainStructures.length === 1 ? 'futebol encontrada' : 'registos de futebol encontradas' }}</span>
+      </div>
+
+      <div class="pagination" *ngIf="totalMainPages > 1" aria-label="Paginação de registos de futebol">
+        <ng-container *ngFor="let page of mainPageNumbers">
+        <button
+          *ngIf="page !== 'ellipsis'; else mainPaginationEllipsis"
+          type="button"
+          class="page-btn"
+          [class.active]="page === mainPage"
+          [attr.aria-current]="page === mainPage ? 'page' : null"
+          (click)="goToMainPage(page)"
+        >
+          {{ page }}
+        </button>
+        <ng-template #mainPaginationEllipsis>
+          <span class="page-ellipsis" aria-hidden="true">...</span>
+        </ng-template>
+        </ng-container>
+      </div>
+    </section>
+
+    <section class="structure-column">
+      <div class="column-head">
+        <div>
+          <h3>Escalões</h3>
+          <p>Grupos de idade ou turmas dentro da formação.</p>
+        </div>
+      </div>
+
+      <form class="table-toolbar substructure-toolbar" aria-label="Filtros de escalões">
+        <label class="search-field">
+          Pesquisar
+          <input [(ngModel)]="subSearch" (ngModelChange)="onSubFilterChange()" name="substructureSearch" type="search" placeholder="Nome, descrição ou futebol" />
+        </label>
+
+        <label>
+          Futebol
+          <select [(ngModel)]="subParentFilter" (ngModelChange)="onSubFilterChange()" name="substructureParentFilter">
+            <option value="">Todas</option>
+            <option *ngFor="let structure of mainStructures" [value]="structure._id">{{ structure.name }}</option>
+          </select>
+        </label>
+
+        <label>
+          Estado
+          <select [(ngModel)]="subStatusFilter" (ngModelChange)="onSubFilterChange()" name="substructureStatus">
+            <option value="todos">Todas</option>
+            <option value="ativas">Ativas</option>
+            <option value="inativas">Inativas</option>
+          </select>
+        </label>
+
+        <label>
+          Ordenação
+          <select [(ngModel)]="subSort" (ngModelChange)="onSubFilterChange()" name="substructureSort">
+            <option value="nameAsc">Nome A-Z</option>
+            <option value="nameDesc">Nome Z-A</option>
+            <option value="parentAsc">Futebol</option>
+            <option value="plansDesc">Mais planos</option>
+            <option value="plansAsc">Menos planos</option>
+          </select>
+        </label>
+
+        <button type="button" class="small-btn secondary" [disabled]="!hasSubFilters" (click)="clearSubFilters()">Limpar</button>
+      </form>
+
+      <div class="table-wrap">
+        <table class="table table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Escalão</th>
+              <th>Futebol</th>
+              <th>Inscrições</th>
+              <th>Estado</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let structure of paginatedSubstructures">
+              <td>
+                <button type="button" class="table-link" (click)="openPlans(structure)">{{ structure.name }}</button>
+                <small>{{ structure.description || 'Sem descrição' }}</small>
+              </td>
+              <td>{{ structure.parent?.name || '-' }}</td>
+              <td><button type="button" class="count-pill count-link" (click)="openPlans(structure)" title="Ver planos deste escalão">{{ getPlanCount(structure) }}</button></td>
+              <td><span class="pill" [class.off]="!structure.active">{{ structure.active ? 'Ativa' : 'Inativa' }}</span></td>
+              <td>
+                <div class="row-actions">
+                  <button type="button" class="small-btn" (click)="editStructure(structure)">Editar</button>
+                  <button type="button" class="small-btn danger" (click)="removeStructure(structure)">{{ structureActionLabel() }}</button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredSubstructures.length === 0">
+              <td colspan="5" class="empty-state">Ainda não existem escalões.</td>
+            </tr>
+            <tr *ngFor="let row of subEmptyRows" class="placeholder-row" aria-hidden="true">
+              <td colspan="5">&nbsp;</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-result-row">
+        <span>{{ filteredSubstructures.length }} {{ filteredSubstructures.length === 1 ? 'escalão encontrado' : 'escalões encontrados' }}</span>
+      </div>
+
+      <div class="pagination" *ngIf="totalSubPages > 1" aria-label="Paginação de escalões">
+        <ng-container *ngFor="let page of subPageNumbers">
+        <button
+          *ngIf="page !== 'ellipsis'; else subPaginationEllipsis"
+          type="button"
+          class="page-btn"
+          [class.active]="page === subPage"
+          [attr.aria-current]="page === subPage ? 'page' : null"
+          (click)="goToSubPage(page)"
+        >
+          {{ page }}
+        </button>
+        <ng-template #subPaginationEllipsis>
+          <span class="page-ellipsis" aria-hidden="true">...</span>
+        </ng-template>
+        </ng-container>
+      </div>
+    </section>
+  </section>
+
+  <div *ngIf="structureModalOpen" class="modal-backdrop" (click)="closeStructureModal()">
+    <section class="catalog-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">Formação / escalão</p>
+          <h3>{{ editingStructureId ? 'Editar registo' : 'Novo registo' }}</h3>
+        </div>
+        <button type="button" class="small-btn secondary" (click)="closeStructureModal()">Fechar</button>
+      </div>
+
+      <form class="form-card" (ngSubmit)="saveStructure()">
+        <label>
+          Nome
+          <input [(ngModel)]="structureForm.name" name="structureName" required maxlength="120" />
+        </label>
+
+        <label>
+          Descrição
+          <input [(ngModel)]="structureForm.description" name="structureDescription" maxlength="255" />
+        </label>
+
+        <label>
+          Fotografia
+          <input [(ngModel)]="structureForm.imageUrl" name="structureImageUrl" placeholder="/api/images/load/identificador" />
+        </label>
+        <label class="file-btn">
+          Enviar fotografia
+          <input type="file" accept="image/*" (change)="uploadStructureImage($event)" />
+        </label>
+
+        <div class="type-selector" role="group" aria-label="Tipo de registo">
+          <button type="button" [class.active]="!structureForm.isAgeGroup" (click)="setStructureType(false)">Futebol</button>
+          <button type="button" [class.active]="structureForm.isAgeGroup" (click)="setStructureType(true)">Escalão</button>
+        </div>
+
+        <label *ngIf="structureForm.isAgeGroup" class="parent-field">
+          Futebol
+          <select [(ngModel)]="structureForm.parent" name="structureParent" required>
+            <option value="">Selecionar área</option>
+            <option *ngFor="let structure of parentOptions" [value]="structure._id">
+              {{ structure.name }}
+            </option>
+          </select>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit">{{ editingStructureId ? 'Guardar' : 'Criar' }}</button>
+          <button type="button" class="secondary-btn" (click)="closeStructureModal()">Cancelar</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>

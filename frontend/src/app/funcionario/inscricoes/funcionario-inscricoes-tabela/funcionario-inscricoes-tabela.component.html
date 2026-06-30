@@ -1,0 +1,181 @@
+<section class="enrolments-section" aria-labelledby="enrolments-title">
+  <div class="table-section-head">
+    <div>
+      <p class="eyebrow">Operação</p>
+      <h2 id="enrolments-title">Tabela de inscrições</h2>
+      <p class="muted">Acompanha inscrições recebidas, estados de validação e cancelamentos dos atletas.</p>
+    </div>
+    <div class="head-actions"><button type="button" class="small-btn" (click)="openCreateEnrolmentModal()">Nova inscrição</button><button type="button" class="small-btn secondary" (click)="loadEnrolments()">Atualizar</button></div>
+  </div>
+
+  <div class="enrolment-counts" aria-label="Resumo de inscrições">
+    <span>{{ enrolments.length }} inscrições</span>
+    <span>{{ canceledCount }} canceladas</span>
+  </div>
+
+  <p *ngIf="message" class="success">{{ message }}</p>
+  <p *ngIf="error && !enrolmentModalOpen && !selectedEnrolment" class="error">{{ error }}</p>
+
+  <section class="manager-panel">
+  <form class="table-toolbar" aria-label="Filtros de inscrições">
+    <label class="search-field">
+      Pesquisar
+      <input
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onFilterChange()"
+        name="enrolmentSearch"
+        type="search"
+        placeholder="ID, atleta, email, escalão ou estado"
+      />
+    </label>
+
+    <label>
+      Estado
+      <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()" name="enrolmentStatusFilter">
+        <option value="todos">Todos</option>
+        <option value="abertas">Em aberto</option>
+        <option *ngFor="let status of enrolmentStatuses" [value]="status.value">{{ status.label }}</option>
+      </select>
+    </label>
+
+    <label>
+      Ordenação
+      <select [(ngModel)]="sortFilter" (ngModelChange)="onFilterChange()" name="enrolmentSortFilter">
+        <option value="clientAsc">Atleta A-Z</option>
+        <option value="clientDesc">Atleta Z-A</option>
+        <option value="createdDesc">Mais recentes</option>
+        <option value="createdAsc">Mais antigas</option>
+        <option value="totalDesc">Maior valor</option>
+        <option value="totalAsc">Menor valor</option>
+      </select>
+    </label>
+
+    <button type="button" class="small-btn secondary" [disabled]="!hasActiveFilters" (click)="clearFilters()">Limpar</button>
+  </form>
+
+  <div class="table-wrap">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Inscrição</th>
+          <th>Atleta</th>
+          <th>Escalões</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Atualizar</th>
+          <th>Histórico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let enrolment of paginatedEnrolments">
+          <td>
+            <strong>#{{ getEnrolmentCode(enrolment) }}</strong>
+            <small>{{ enrolment.createdAt | date:'dd/MM/yyyy HH:mm' }}</small>
+          </td>
+          <td>
+            <strong>{{ enrolment.user?.username || 'Atleta' }}</strong>
+            <small>{{ enrolment.user?.email || '-' }}</small>
+          </td>
+          <td>
+            <span>{{ enrolment.items?.length || 0 }} inscrição(ões)</span>
+            <small *ngIf="enrolment.items?.length">{{ enrolment.items[0]?.planName }}</small>
+          </td>
+        <td>{{ formatPrice(enrolment.totalCents) }}<small *ngIf="enrolment.discountCents">Desconto: -{{ formatPrice(enrolment.discountCents) }}</small></td>
+          <td>
+            <span class="status-pill" [class.warning]="enrolment.status === 'pendente'" [class.off]="enrolment.status === 'cancelada'">
+              {{ getStatusLabel(enrolment.status) }}
+            </span>
+          </td>
+          <td>
+            <select [ngModel]="enrolment.status" (ngModelChange)="updateEnrolmentStatus(enrolment, $event)" name="enrolmentStatus{{ enrolment._id }}">
+              <option *ngFor="let status of availableStatuses(enrolment)" [value]="status.value">{{ status.label }}</option>
+            </select>
+          </td>
+          <td><button type="button" class="small-btn secondary" (click)="showEnrolmentDetails(enrolment)">Ver</button></td>
+        </tr>
+
+        <tr *ngIf="filteredEnrolments.length === 0">
+          <td colspan="7" class="empty-state">Não foram encontradas inscrições com estes filtros.</td>
+        </tr>
+        <tr *ngFor="let row of enrolmentEmptyRows" class="placeholder-row" aria-hidden="true">
+          <td colspan="7">&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-result-row">
+    <span>{{ filteredEnrolments.length }} {{ filteredEnrolments.length === 1 ? 'inscrição encontrada' : 'inscrições encontradas' }}</span>
+  </div>
+
+  <div class="pagination" *ngIf="totalEnrolmentPages > 1" aria-label="Paginação de inscrições">
+    <ng-container *ngFor="let page of pageNumbers">
+    <button
+      *ngIf="page !== 'ellipsis'; else enrolmentPaginationEllipsis"
+      type="button"
+      class="page-btn"
+      [class.active]="page === enrolmentPage"
+      [attr.aria-current]="page === enrolmentPage ? 'page' : null"
+      (click)="goToPage(page)"
+    >
+      {{ page }}
+    </button>
+    <ng-template #enrolmentPaginationEllipsis>
+      <span class="page-ellipsis" aria-hidden="true">...</span>
+    </ng-template>
+    </ng-container>
+  </div>
+  </section>
+</section>
+
+<div *ngIf="selectedEnrolment" class="modal-backdrop" (click)="closeEnrolmentDetails()">
+  <section class="employee-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <div class="table-section-head">
+      <div><p class="eyebrow">Inscrição</p><h2>#{{ getEnrolmentCode(selectedEnrolment) }}</h2></div>
+      <button type="button" class="small-btn secondary" (click)="closeEnrolmentDetails()">Fechar</button>
+    </div>
+    <h3>Planos de inscrição</h3>
+    <ul><li *ngFor="let item of selectedEnrolment.items">{{ item.quantity }} x {{ item.planName }} - {{ formatPrice(item.lineTotalCents) }}</li></ul>
+    <h3>Histórico de estados</h3>
+    <ol><li *ngFor="let item of selectedEnrolment.statusHistory">{{ getStatusLabel(item.oldStatus) }} para {{ getStatusLabel(item.newStatus) }} <small>{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</small></li></ol>
+  </section>
+</div>
+
+<div *ngIf="enrolmentModalOpen" class="modal-backdrop" (click)="closeCreateEnrolmentModal()">
+  <section class="employee-modal enrolment-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <div class="table-section-head">
+      <div><p class="eyebrow">Inscrição</p><h2>Nova inscrição</h2></div>
+      <button type="button" class="small-btn secondary" (click)="closeCreateEnrolmentModal()">Fechar</button>
+    </div>
+
+    <p *ngIf="modalError" class="error modal-error">{{ modalError }}</p>
+
+    <form class="enrolment-form" (ngSubmit)="createEnrolment()">
+      <label class="wide-field">Filtrar atleta
+        <span class="search-inline">
+          <input [(ngModel)]="enrolmentForm.athleteSearch" name="enrolmentAthleteSearch" placeholder="Telefone, email ou NIF" />
+          <button type="button" class="small-btn secondary" (click)="searchAthleteForEnrolment()">Filtrar</button>
+        </span>
+      </label>
+
+      <label>Atleta
+        <select [(ngModel)]="enrolmentForm.athleteId" name="enrolmentAthleteId" required>
+          <option value="">Selecionar atleta</option>
+          <option *ngFor="let athlete of athletesFound" [value]="athlete._id">{{ athlete.userData?.name || athlete.username }} - {{ athlete.email }}</option>
+        </select>
+      </label>
+
+      <label>Escalão / plano de inscrição
+        <select [(ngModel)]="enrolmentForm.planId" name="enrolmentPlanId" required>
+          <option value="">Selecionar escalão</option>
+          <option *ngFor="let plan of plans" [value]="plan._id" [disabled]="plan.vacancies <= 0">{{ plan.name }} - {{ formatPrice(plan.feeCents) }} - {{ plan.vacancies }} vaga(s)</option>
+        </select>
+      </label>
+
+      <div class="form-actions">
+        <button type="submit">Criar inscrição</button>
+        <button type="button" class="secondary-btn" (click)="closeCreateEnrolmentModal()">Cancelar</button>
+      </div>
+    </form>
+  </section>
+</div>

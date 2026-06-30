@@ -1,0 +1,30 @@
+<footer class="site-footer">
+  <div class="footer-grid">
+    <section class="store-summary">
+      <a routerLink="/dashboard" class="footer-brand">
+        <img *ngIf="store.logoUrl" [src]="resolveImageUrl(store.logoUrl)" [alt]="store.name" />
+        <strong *ngIf="!store.logoUrl">{{ store.name || 'Clube Formação' }}</strong>
+      </a>
+      <p>{{ store.aboutText || 'Inscrições, escalões e acompanhamento dos alunos do clube.' }}</p>
+    </section>
+
+    <nav aria-label="Ligações do clube">
+      <h2>Clube</h2>
+      <a routerLink="/dashboard">Painel interno</a>
+      <a routerLink="/perfil">Perfil</a>
+      <a routerLink="/definicoes">Definições</a>
+    </nav>
+
+    <section>
+      <h2>Contactos</h2>
+      <a>{{ store.phone }}</a>
+      <a>{{ store.email }}</a>
+      <p>{{ store.address || 'Morada ainda não definida' }}</p>
+    </section>
+  </div>
+
+  <div class="footer-bottom">
+    <span>{{ store.name || 'Clube Formação' }} © {{ year }}</span>
+    <span>Gestão de inscrições e escalões</span>
+  </div>
+</footer>

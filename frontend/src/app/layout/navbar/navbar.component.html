@@ -1,0 +1,30 @@
+<header class="topbar navbar navbar-expand-lg bg-white shadow-sm">
+  <a routerLink="/dashboard" class="brand navbar-brand" (click)="closeMenu()">
+    <img *ngIf="clubSettings.logoUrl" [src]="resolveImageUrl(clubSettings.logoUrl)" [alt]="clubSettings.name" />
+    <span *ngIf="!clubSettings.logoUrl && clubSettings.name">{{ clubSettings.name }}</span>
+  </a>
+
+  <nav>
+    <ng-container *ngIf="user$ | async as user; else guestMenu">
+      <div class="user-menu">
+        <button type="button" class="user-button btn btn-outline-primary btn-sm" (click)="toggleMenu()">
+          <span class="account-icon" aria-hidden="true"><span class="icon-head"></span><span class="icon-body"></span></span>
+          <span>{{ user?.name || user?.username || 'Utilizador' }}</span>
+          <span class="chevron">{{ menuOpen ? '^' : 'v' }}</span>
+        </button>
+        <div *ngIf="menuOpen" class="dropdown shadow-sm">
+          <a *ngIf="!isCurrentRoute('/dashboard')" routerLink="/dashboard" (click)="closeMenu()">Painel interno</a>
+          <a *ngIf="!isCurrentRoute('/perfil')" routerLink="/perfil" (click)="closeMenu()">Perfil</a>
+          <a *ngIf="!isCurrentRoute('/definicoes')" routerLink="/definicoes" (click)="closeMenu()">Definições</a>
+          <button type="button" (click)="logout()">Logout</button>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #guestMenu>
+      <a routerLink="/login" class="account-link btn btn-outline-primary" (click)="closeMenu()">
+        <span class="account-icon" aria-hidden="true"><span class="icon-head"></span><span class="icon-body"></span></span>
+        <span class="account-copy"><small>Olá!</small><strong>Iniciar sessão</strong></span>
+      </a>
+    </ng-template>
+  </nav>
+</header>

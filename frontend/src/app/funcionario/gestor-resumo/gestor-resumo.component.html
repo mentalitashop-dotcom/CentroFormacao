@@ -1,0 +1,90 @@
+<section class="summary" aria-labelledby="summary-title">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Resumo</p>
+      <h2 id="summary-title">Visão geral do clube</h2>
+      <p class="muted">Indicadores atualizados automaticamente para acompanhar inscrições, escalões e vagas.</p>
+    </div>
+    <button type="button" class="small-btn secondary" (click)="loadStats()">Atualizar</button>
+  </div>
+
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <div class="summary-layout">
+    <section class="status-panel" aria-labelledby="status-title">
+      <p class="eyebrow">Prioridades</p>
+      <h3 id="status-title">Estado operacional</h3>
+
+      <div class="progress-block">
+        <span>Taxa de inscrições concluídas</span>
+        <strong>{{ completionRate }}%</strong>
+        <div class="progress-track">
+          <span [style.width.%]="completionRate"></span>
+        </div>
+      </div>
+
+      <ul class="priority-list">
+        <li *ngIf="stats.openEnrolments > 0">
+          <strong>{{ stats.openEnrolments }} em aberto</strong>
+          <span>Verifica as inscrições pendentes.</span>
+        </li>
+        <li *ngIf="stats.canceledEnrolments > 0">
+          <strong>{{ stats.canceledEnrolments }} canceladas</strong>
+          <span>Analisa pedidos com problema.</span>
+        </li>
+        <li *ngIf="stats.plansCount === 0">
+          <strong>Escalões sem planos</strong>
+          <span>Cria planos de inscrição antes de abrir vagas.</span>
+        </li>
+        <li *ngIf="hasClubActivity && stats.openEnrolments === 0 && stats.canceledEnrolments === 0">
+          <strong>Sem alertas imediatos</strong>
+          <span>A gestão de inscrições está estável neste momento.</span>
+        </li>
+        <li *ngIf="!hasClubActivity">
+          <strong>Clube pronto para configurar</strong>
+          <span>Começa pelas áreas de formação, escalões e dados do centro.</span>
+        </li>
+      </ul>
+    </section>
+
+    <div class="summary-grid">
+      <button type="button" class="metric-card" (click)="openEnrolments('abertas')">
+        <span>Em aberto</span>
+        <strong>{{ stats.openEnrolments }}</strong>
+        <small>Ver inscrições por tratar</small>
+      </button>
+      <button type="button" class="metric-card" (click)="openEnrolments('concluida')">
+        <span>Concluídas</span>
+        <strong>{{ stats.completedEnrolments }}</strong>
+        <small>Confirmar histórico concluído</small>
+      </button>
+      <button type="button" class="metric-card warning-card" (click)="openEnrolments('cancelada')">
+        <span>Canceladas</span>
+        <strong>{{ stats.canceledEnrolments }}</strong>
+        <small>Ver pedidos cancelados</small>
+      </button>
+      <button type="button" class="metric-card vacancy-card" (click)="openLowVacancyPlans()">
+        <span>Vagas baixas</span>
+        <strong>{{ stats.lowVacancyPlans }}</strong>
+        <small>Ver escalões com 5 ou menos vagas</small>
+      </button>
+    </div>
+  </div>
+
+  <section class="best-sellers" aria-labelledby="best-sellers-title">
+    <div>
+      <p class="eyebrow">Inscrições</p>
+      <h3 id="best-sellers-title">Escalões com mais inscrições</h3>
+    </div>
+    <p *ngIf="!stats.mostRequestedPlans?.length" class="muted">Ainda não existem inscrições registadas.</p>
+    <ol *ngIf="stats.mostRequestedPlans?.length">
+      <li *ngFor="let item of stats.mostRequestedPlans; let index = index">
+        <span>{{ index + 1 }}</span>
+        <div>
+          <strong>{{ item._id }}</strong>
+          <small>{{ item.quantity }} inscrição(ões) · {{ formatPrice(item.totalCents) }}</small>
+        </div>
+      </li>
+    </ol>
+  </section>
+</section>
