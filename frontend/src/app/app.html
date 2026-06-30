@@ -1,0 +1,6 @@
+<app-navbar *ngIf="auth.isAuthenticated()" />
+<aside class="toast-stack" aria-live="polite">
+  <button *ngFor="let item of toast.messages$ | async" type="button" class="toast-message" [class.error]="item.type === 'error'" (click)="toast.dismiss(item.id)">{{ item.text }}</button>
+</aside>
+<main class="app-content"><router-outlet /></main>
+<app-footer *ngIf="auth.isAuthenticated()" />
