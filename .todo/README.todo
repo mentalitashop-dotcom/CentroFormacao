@@ -1,0 +1,56 @@
+# PAW Store
+
+Aplicação de comércio eletrónico desenvolvida com Angular, ExpressJS e MongoDB.
+
+## Estrutura
+
+- `frontend/`: aplicação Angular.
+- `backend/controllers/`: lógica dos pedidos HTTP.
+- `backend/middleware/`: autenticação e autorização.
+- `backend/models/`: modelos Mongoose.
+- `backend/routes/public/`: rotas acessíveis sem autenticação.
+- `backend/routes/private/`: rotas protegidas por JWT.
+- `backend/utils/`: funções partilhadas e scripts auxiliares.
+- `docs/`: enunciado e documentação do projeto.
+
+## Arranque manual
+
+Requisitos:
+
+- Node.js e npm;
+- acesso a uma base de dados MongoDB;
+- variável de ambiente `MONGODB_URI` configurada no sistema ou na sessão do terminal.
+
+Antes do primeiro arranque, instalar as dependências em cada aplicação:
+
+```powershell
+cd backend
+npm install
+
+cd ..\frontend
+npm install
+```
+
+Na sessão do terminal do backend, indicar a ligação MongoDB sem criar ficheiros `.env`:
+
+```powershell
+$env:MONGODB_URI = "ligacao-mongodb"
+$env:JWT_SECRET = "chave-jwt-opcional"
+```
+
+Abrir um terminal no backend:
+
+```powershell
+cd backend
+npm start
+```
+
+Abrir outro terminal no frontend:
+
+```powershell
+cd frontend
+npm start
+```
+
+
+Por segurança, a palavra-passe deve ser alterada após o primeiro início de sessão.
